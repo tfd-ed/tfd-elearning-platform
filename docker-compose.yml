@@ -1,0 +1,66 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile-server
+    container_name: server
+    depends_on:
+      - sez-db
+      - sez-redis
+    volumes:
+      - ./server/upload:/server/upload
+      - ./server/src:/server/src
+    ports:
+      - "3000:3000"
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile-client
+    container_name: client
+    depends_on:
+      - server
+    environment:
+      - BASE_URL=server
+      - NODE_ENV=production
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile-admin
+    container_name: admin
+    depends_on:
+      - server
+    environment:
+      - BASE_URL=server
+      - NODE_ENV=production
+  nginx-load-balancer:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    container_name: nginx-load-balancer
+    depends_on:
+      - client
+    environment:
+      - NGINX_SERVER_NAME=localhost
+      - CLIENT_HOST=client
+      - CLIENT_PORT=8000
+      - HOST=server
+      - PORT=3000
+      - NGINX_MAX_BODY=100M
+    ports:
+      - "80:80"
+  postgres-db:
+    image: postgres:16
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: tfd-db
+      POSTGRES_USER: tfd
+      POSTGRES_PASSWORD: admin
+#    ports:
+#      - "5432:5432"
+    volumes:
+      - tfdb:/var/lib/tfdb
+  cache-server-redis:
+    image: redis:5
+    container_name: cache-server-redis
+volumes:
+  tfdb:

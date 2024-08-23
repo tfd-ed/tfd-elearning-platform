@@ -1,0 +1,15 @@
+FROM --platform=linux/amd64 node:16.10.0-alpine
+
+ENV BASE_URL server
+ENV BASE_URL_PORT 3000
+ENV NODE_ENV local
+WORKDIR /app
+COPY client/package.json client/yarn.lock ./
+RUN yarn install
+
+COPY client .
+RUN yarn build
+
+EXPOSE 8000
+
+CMD [ "yarn", "start" ]

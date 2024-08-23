@@ -1,0 +1,14 @@
+FROM --platform=linux/amd64 node:16.10.0-alpine
+
+WORKDIR /server
+ENV NODE_ENV development
+COPY server/package.json server/yarn.lock ./
+RUN yarn install
+
+COPY server .
+RUN cp .env.example .env
+RUN yarn build
+
+EXPOSE 3000
+
+CMD [ "yarn", "start:prod" ]

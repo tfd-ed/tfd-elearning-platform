@@ -1,0 +1,9 @@
+[submodule "client"]
+	path = client
+	url = https://github.com/tfd-ed/tfd-blog.git
+[submodule "server"]
+	path = server
+	url = https://github.com/tfd-ed/tfd-nest-blog-api.git
+[submodule "admin"]
+	path = admin
+	url = https://github.com/tfd-ed/tfd-elearning-admin.git

@@ -9,6 +9,7 @@ RUN apt-get update && apt install automake autotools-dev autoconf -y
 RUN yarn install
 
 COPY client .
+RUN cp .env.example .env
 RUN yarn build
 
 EXPOSE 8000

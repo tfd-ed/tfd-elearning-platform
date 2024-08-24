@@ -1,10 +1,11 @@
-FROM --platform=linux/amd64 node:16.10.0-alpine
+FROM --platform=linux/amd64 node:16.20.2-slim
 
-ENV BASE_URL server
-ENV BASE_URL_PORT 3000
-ENV NODE_ENV local
+ENV BASE_URL server:3000
+ENV PORT 8000
+ENV NODE_ENV dev
 WORKDIR /app
 COPY client/package.json client/yarn.lock ./
+RUN apt-get update && apt install automake autotools-dev autoconf -y
 RUN yarn install
 
 COPY client .

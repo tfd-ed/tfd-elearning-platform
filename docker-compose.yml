@@ -5,13 +5,11 @@ services:
       dockerfile: Dockerfile-server
     container_name: server
     depends_on:
-      - sez-db
-      - sez-redis
+      - postgres-db
+      - cache-server-redis
     volumes:
       - ./server/upload:/server/upload
       - ./server/src:/server/src
-    ports:
-      - "3000:3000"
   client:
     build:
       context: .
@@ -22,6 +20,8 @@ services:
     environment:
       - BASE_URL=server
       - NODE_ENV=production
+    ports:
+      - "8000:8000"
   admin:
     build:
       context: .
@@ -32,6 +32,8 @@ services:
     environment:
       - BASE_URL=server
       - NODE_ENV=production
+    ports:
+      - "5000:5000"
   nginx-load-balancer:
     build:
       context: .
@@ -41,8 +43,6 @@ services:
       - client
     environment:
       - NGINX_SERVER_NAME=localhost
-      - CLIENT_HOST=client
-      - CLIENT_PORT=8000
       - HOST=server
       - PORT=3000
       - NGINX_MAX_BODY=100M

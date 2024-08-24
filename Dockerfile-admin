@@ -1,15 +1,16 @@
-FROM --platform=linux/amd64 node:16.10.0-alpine
+FROM --platform=linux/amd64 node:16.20.2-slim
 
-ENV BASE_URL server
-ENV WEB_URL 5000
-ENV NODE_ENV local
+ENV BASE_URL server:3000
+ENV PORT 5000
+ENV NODE_ENV dev
 WORKDIR /app
 COPY admin/package.json admin/yarn.lock ./
+RUN apt-get update && apt install automake autotools-dev autoconf -y
 RUN yarn install
 
-COPY client .
+COPY admin .
 RUN yarn build
 
-EXPOSE 8000
+EXPOSE 5000
 
 CMD [ "yarn", "start" ]

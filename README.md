@@ -20,9 +20,10 @@
 
 ## Setup Guide
 ### With Docker
+Make sure you have your [docker](https://docs.docker.com/engine/install/) setup and running.
 Run the following scripts for UNIX (Mac,Linux)
 ```bash  
-$ docker-compose up -d
+$ docker compose up -d
 ```  
 
 ## Available Services with Docker Container

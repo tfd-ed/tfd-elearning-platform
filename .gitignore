@@ -10,6 +10,13 @@ lerna-debug.log*
 .env.server
 .env.admin
 .env.client
+.env.server.prod
+.env.admin.prod
+.env.client.prod
+
+.env
+.env.prod
+
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

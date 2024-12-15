@@ -1,63 +1,68 @@
 services:
-  server:
+  server-prod:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile-server
       args:
-        ENV_FILE: ".env.server"
-    container_name: server
+        ENV_FILE: ".env.server.prod"
+    container_name: server-prod
     depends_on:
-      - postgres-db
-      - cache-server-redis
+      - postgres-prod
+      - redis
     volumes:
       - ./server/upload:/server/upload
       - ./server/src:/server/src
-      - .env.server:/server/.env
+      - .env.server.prod:/server/.env
     networks:
       - tfd-prod-network
-  client:
+  client-prod:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile-client
       args:
-        ENV_FILE: ".env.client"
-    container_name: client
+        ENV_FILE: ".env.client.prod"
+    container_name: client-prod
     depends_on:
-      - server
+      - server-prod
     volumes:
-      - .env.client:/app/.env
+      - .env.client.prod:/app/.env
     networks:
       - tfd-prod-network
-  admin:
+  admin-prod:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile-admin
       args:
-        ENV_FILE: ".env.client"
-    container_name: admin
+        ENV_FILE: ".env.admin.prod"
+    container_name: admin-prod
     depends_on:
-      - server
+      - server-prod
     volumes:
-      - .env.admin:/app/.env
+      - .env.admin.prod:/app/.env
     networks:
       - tfd-prod-network
-  nginx-load-balancer:
+  nginx:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile-nginx
-    container_name: nginx-load-balancer
+    container_name: nginx
     depends_on:
-      - server
+      - server-prod
     environment:
       - NGINX_SERVER_NAME=localhost
-      - HOST_1=server
+      - HOST_1=server-prod
       # - HOST_2=tfd-elearning-platform-server-2
       # - HOST_3=tfd-elearning-platform-server-3
       - PORT=3000
       - NGINX_MAX_BODY=100M
     networks:
       - tfd-prod-network
-  postgres-db:
+  postgres-prod:
+    restart: unless-stopped
     image: postgres:14.12
     container_name: ${DB_HOST}
     environment:
@@ -68,9 +73,11 @@ services:
       - tfdb:/var/lib/postgresql/data
     networks:
       - tfd-prod-network
-  cache-server-redis:
+    ports:
+      - ${DB_PORT}:5432
+  redis:
     image: redis:5
-    container_name: cache-server-redis
+    container_name: redis
     networks:
       - tfd-prod-network
 volumes:
